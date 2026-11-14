@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ujwal Shyam Kantimohanthy — Open to work · Networks & IT</title>
+<meta name="description" content="ICT engineering student at Tor Vergata, open to junior network, systems and IT support roles in Rome or remote.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0B0D; --panel: #101317; --line: #20252B; --fg: #F5F5F5; --muted: #8A9098;
+    --blue: #4F8CFF; --amber: #F7B955; --green: #31D07D; --red: #F26B6B;
+    --mono: 'JetBrains Mono', ui-monospace, monospace; --sans: 'Inter', system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 var(--sans); }
+  a { color: inherit; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 13px; }
+  nav .brand { font-weight: 500; letter-spacing: .04em; }
+  nav .links { display: flex; gap: 20px; color: var(--muted); }
+  nav .links a { text-decoration: none; }
+  nav .links a:hover { color: var(--fg); }
+  .hero { padding: 72px 0 48px; display: grid; grid-template-columns: 1.4fr 1fr; gap: 48px; align-items: end; }
+  .status { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; color: var(--green); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; }
+  .status::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 0 4px rgba(49,208,125,.15); }
+  h1 { font-size: clamp(36px, 6vw, 60px); line-height: 1.05; letter-spacing: -.025em; margin: 20px 0 16px; font-weight: 600; }
+  h1 span { color: var(--muted); font-weight: 400; }
+  .lede { color: var(--muted); font-size: 17px; max-width: 560px; margin: 0 0 28px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 14px; border: 1px solid var(--line); }
+  .btn.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+  .btn:hover { border-color: var(--muted); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+  .facts dt { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+  .facts dd { margin: 2px 0 16px; }
+  .facts dd:last-child { margin-bottom: 0; }
+  section { padding: 48px 0; border-top: 1px solid var(--line); }
+  .eyebrow { font-family: var(--mono); font-size: 12px; color: var(--blue); letter-spacing: .06em; text-transform: uppercase; margin: 0 0 8px; }
+  h2 { font-size: 28px; letter-spacing: -.015em; margin: 0 0 8px; font-weight: 600; }
+  .sub { color: var(--muted); margin: 0 0 28px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 28px; }
+  .stat .n { font-size: 36px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .stat .l { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .funnel { display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: var(--line); margin: 0 0 8px; }
+  .funnel i { display: block; height: 100%; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; font-family: var(--mono); font-size: 12px; color: var(--muted); margin-bottom: 28px; }
+  .legend b { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .chip { font: 500 13px var(--sans); color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+  .chip[aria-pressed="true"] { color: var(--bg); background: var(--fg); border-color: var(--fg); }
+  .search { flex: 1 1 220px; background: var(--panel); border: 1px solid var(--line); color: var(--fg); border-radius: 999px; padding: 6px 14px; font: 13px var(--sans); }
+  .tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 820px; }
+  th { text-align: left; font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 12px 14px; border-bottom: 1px solid var(--line); background: var(--panel); position: sticky; top: 0; }
+  td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+  .role { font-weight: 500; }
+  .co { color: var(--muted); font-size: 13px; }
+  .mono { font-family: var(--mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .pill { display: inline-block; font: 500 11px var(--mono); padding: 2px 8px; border-radius: 999px; border: 1px solid var(--line); white-space: nowrap; }
+  .s-Applied { color: var(--blue); border-color: rgba(79,140,255,.4); }
+  .s-Interview { color: var(--amber); border-color: rgba(247,185,85,.4); }
+  .s-Offer { color: var(--green); border-color: rgba(49,208,125,.4); }
+  .s-Rejected { color: var(--red); border-color: rgba(242,107,107,.35); }
+  .s-Skipped { color: var(--muted); }
+  .fit-A { color: var(--green); }
+  .open { color: var(--blue); text-decoration: none; font-weight: 500; }
+  .open:hover { text-decoration: underline; }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+  .grid3 h3 { margin: 0 0 6px; font-size: 16px; }
+  .grid3 p { margin: 0; color: var(--muted); font-size: 14px; }
+  footer { padding: 32px 0 48px; border-top: 1px solid var(--line); color: var(--muted); font-family: var(--mono); font-size: 12px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .lockcard { max-width: 460px; }
+  .lockcard label { display: block; margin-bottom: 8px; }
+  .lockrow { display: flex; gap: 8px; }
+  .lockrow .search { border-radius: 8px; padding: 10px 14px; }
+  .empty { padding: 32px; text-align: center; color: var(--muted); }
+  @media (max-width: 760px) { .hero { grid-template-columns: 1fr; padding-top: 48px; } nav .links { display: none; } }
+  @media (prefers-reduced-motion: no-preference) { .fade { animation: fade .5s ease-out both; } @keyframes fade { from { opacity: 0; transform: translateY(6px); } } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <span class="brand">UJ · kantimohanthy.com</span>
+    <span class="links"><a href="#search">Tracker</a><a href="#about">About</a><a href="https://kantimohanthy.dev">Portfolio ↗</a></span>
+  </nav>
+
+  <header class="hero fade">
+    <div>
+      <span class="status">Open to work · available immediately</span>
+      <h1>Ujwal Shyam Kantimohanthy <span>— networks, systems &amp; IT support.</span></h1>
+      <p class="lede">Final-year ICT and Internet Engineering student at the University of Rome Tor Vergata. I troubleshoot networks, run Linux, and ship production web software. Looking for a junior network, systems or IT support role in Rome or remote.</p>
+      <div class="cta">
+        <a class="btn primary" href="Ujwal_Kantimohanthy_CV.pdf" download>Download CV</a>
+        <a class="btn" href="mailto:ujwalshyamkantimohanthy@gmail.com">Email me</a>
+        <a class="btn" href="https://www.linkedin.com/in/ujwalshyam-kantimohanthy/" rel="noopener">LinkedIn ↗</a>
+        <a class="btn" href="https://github.com/kantimohanthy" rel="noopener">GitHub ↗</a>
+      </div>
+    </div>
+    <dl class="card facts">
+      <dt>Studying</dt><dd>BSc ICT &amp; Internet Engineering, Tor Vergata · 2027</dd>
+      <dt>Thesis</dt><dd>Wireless mesh networks + TV White Space for rural connectivity</dd>
+      <dt>Stack</dt><dd>TCP/IP · DNS · Wireshark · Linux · Python · TypeScript · Next.js · Supabase</dd>
+      <dt>Languages</dt><dd>English (professional) · Telugu (native) · Hindi (fluent) · Italian (learning)</dd>
+    </dl>
+  </header>
+
+  <section id="search">
+    <p class="eyebrow">Private</p>
+    <h2>Job tracker</h2>
+    <p class="sub">This part is encrypted. Enter the password to unlock it. Last update: <span id="updated" class="mono">locked</span></p>
+
+    <form id="lock" class="card lockcard" autocomplete="off">
+      <label for="pw" class="mono">Password</label>
+      <div class="lockrow">
+        <input id="pw" type="password" class="search" required autocomplete="current-password">
+        <button class="btn primary" type="submit">Unlock</button>
+      </div>
+      <p id="lockmsg" class="co" role="status"></p>
+    </form>
+
+    <div id="vault" hidden>
+      <div class="stats" id="stats"></div>
+      <div class="funnel" id="funnel" role="img" aria-label="Share of tracked roles in each application stage"></div>
+      <div class="legend" id="legend"></div>
+
+      <div class="filters" role="group" aria-label="Filters">
+        <button class="chip" data-f="mode" data-v="" aria-pressed="true">All</button>
+        <button class="chip" data-f="mode" data-v="Remote" aria-pressed="false">Remote</button>
+        <button class="chip" data-f="mode" data-v="Rome" aria-pressed="false">Rome area</button>
+        <button class="chip" data-f="status" data-v="Applied" aria-pressed="false">Applied</button>
+        <button class="chip" data-f="status" data-v="Interview" aria-pressed="false">Interviewing</button>
+        <input class="search" id="q" type="search" placeholder="Search role or company" aria-label="Search role or company">
+        <button class="chip" id="relock" type="button">Lock</button>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Role</th><th>Where</th><th>Type</th><th>Posted</th><th>Pay listed</th><th>Status</th><th></th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <p class="eyebrow">What I bring</p>
+    <h2>Recent work</h2>
+    <p class="sub">Full details in the <a href="Ujwal_Kantimohanthy_CV.pdf">CV</a> and on my <a href="https://kantimohanthy.dev">portfolio</a>.</p>
+    <div class="grid3">
+      <div class="card"><h3>LOOP · Zidio Development</h3><p>Deployed an AI platform that turns customer feedback into insights for managers. User roles, spreadsheet import, automated tests before every release. Next.js, TypeScript, Supabase.</p></div>
+      <div class="card"><h3>DASER-Net · INFERENCE Lab</h3><p>Real-data validation of a speech emotion recognition model across IEMOCAP, CREMA-D and RAVDESS, with reproducible training and ablation experiments.</p></div>
+      <div class="card"><h3>CosmoHub · STATION F Landing Zone</h3><p>Knowledge graph from live ROR and OpenAlex data: 20 organisations, 72 topics, 144 relationships, 323 traceable evidence records.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© Ujwal Shyam Kantimohanthy · Rome</span>
+    <span>Static site · no tracking · no cookies</span>
+  </footer>
+</div>
+
+<script>
+(function () {
+  const STAGES = [
+    ['To apply', 'var(--line)'], ['Applied', 'var(--blue)'], ['Interview', 'var(--amber)'],
+    ['Offer', 'var(--green)'], ['Rejected', 'var(--red)'], ['Skipped', '#3a3f46']
+  ];
+  const state = { mode: '', status: '', q: '' };
+  let jobs = [];
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const safeUrl = (u) => /^https:\/\//.test(String(u)) ? u : null;
+  const fmtDate = (d) => { const t = new Date(d + 'T00:00:00Z'); return isNaN(t) ? '' : t.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', timeZone: 'UTC' }); };
+  const fmtPay = (j) => j.salary_min ? (j.salary_max && j.salary_max !== j.salary_min ? `€${(j.salary_min/1000).toFixed(0)}–${(j.salary_max/1000).toFixed(0)}k` : `€${(j.salary_min/1000).toFixed(1)}k`) : '—';
+
+  function drawStats() {
+    const count = (s) => jobs.filter((j) => j.status === s).length;
+    const stats = document.getElementById('stats');
+    stats.replaceChildren();
+    [['Roles tracked', jobs.length], ['Remote', jobs.filter((j) => j.mode === 'Remote').length],
+     ['Applied', count('Applied') + count('Interview') + count('Offer') + count('Rejected')], ['Interviews', count('Interview') + count('Offer')]]
+      .forEach(([l, n]) => { const c = el('div', 'card stat'); c.append(el('div', 'n', String(n)), el('div', 'l', l)); stats.append(c); });
+    const funnel = document.getElementById('funnel'), legend = document.getElementById('legend');
+    funnel.replaceChildren(); legend.replaceChildren();
+    STAGES.forEach(([s, color]) => {
+      const n = count(s); if (!n) return;
+      const seg = el('i'); seg.style.width = (100 * n / jobs.length) + '%'; seg.style.background = color; seg.title = `${s}: ${n}`; funnel.append(seg);
+      const item = el('span'); const sw = el('b'); sw.style.background = color; item.append(sw, document.createTextNode(`${s} ${n}`)); legend.append(item);
+    });
+  }
+
+  function drawRows() {
+    const tbody = document.getElementById('rows');
+    tbody.replaceChildren();
+    const q = state.q.toLowerCase();
+    const rank = { Interview: 0, Offer: 0, Applied: 1, 'To apply': 2, Rejected: 3, Skipped: 4 };
+    const fitRank = { A: 0, B: 1, C: 2, Skip: 3 };
+    const list = jobs
+      .filter((j) => (!state.mode || j.mode === state.mode) && (!state.status || j.status === state.status))
+      .filter((j) => !q || `${j.title} ${j.company}`.toLowerCase().includes(q))
+      .sort((a, b) => (rank[a.status] ?? 5) - (rank[b.status] ?? 5) || (fitRank[a.fit] ?? 9) - (fitRank[b.fit] ?? 9) || String(b.posted).localeCompare(String(a.posted)));
+    if (!list.length) { const tr = el('tr'); const td = el('td', 'empty', 'No roles match.'); td.colSpan = 7; tr.append(td); tbody.append(tr); return; }
+    list.forEach((j) => {
+      const tr = el('tr');
+      const t = el('td'); t.append(el('div', 'role', j.title), el('div', 'co', j.company)); tr.append(t);
+      tr.append(el('td', 'co', j.location), el('td', 'mono', j.contract), el('td', 'mono', fmtDate(j.posted)), el('td', 'mono', fmtPay(j)));
+      const s = el('td'); s.append(el('span', `pill s-${String(j.status).replace(/\s/g, '')}`, j.status)); tr.append(s);
+      const l = el('td'); const u = safeUrl(j.url);
+      if (u) { const a = el('a', 'open', 'View ↗'); a.href = u; a.target = '_blank'; a.rel = 'noopener noreferrer'; l.append(a); }
+      tr.append(l); tbody.append(tr);
+    });
+  }
+
+  document.querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => {
+    const f = c.dataset.f, v = c.dataset.v;
+    if (f === 'mode') state.mode = v;
+    else state.status = state.status === v ? '' : v;
+    document.querySelectorAll('.chip').forEach((x) => {
+      const on = x.dataset.f === 'mode' ? x.dataset.v === state.mode : x.dataset.v === state.status;
+      x.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    drawRows();
+  }));
+  document.getElementById('q').addEventListener('input', (e) => { state.q = e.target.value; drawRows(); });
+
+  const b64 = (x) => Uint8Array.from(atob(x), (c) => c.charCodeAt(0));
+  async function unlock(pw) {
+    const e = await fetch('jobs.enc.json', { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error('load'); return r.json(); });
+    const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
+    const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt: b64(e.salt), iterations: e.iter }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+    const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(e.iv) }, key, b64(e.ct));
+    return JSON.parse(new TextDecoder().decode(plain));
+  }
+  function show(d) {
+    jobs = Array.isArray(d.jobs) ? d.jobs : [];
+    const u = new Date(d.updated);
+    document.getElementById('updated').textContent = isNaN(u) ? '—' : u.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Rome' }) + ' (Rome)';
+    document.getElementById('lock').hidden = true;
+    document.getElementById('vault').hidden = false;
+    drawStats(); drawRows();
+  }
+  async function tryUnlock(pw, quiet) {
+    const msg = document.getElementById('lockmsg');
+    if (!quiet) msg.textContent = 'Unlocking…';
+    try {
+      show(await unlock(pw));
+      msg.textContent = '';
+      try { sessionStorage.setItem('jt', pw); } catch (_) {}
+    } catch (err) {
+      try { sessionStorage.removeItem('jt'); } catch (_) {}
+      if (!quiet) msg.textContent = err.message === 'load' ? 'Could not load the tracker. Try again later.' : 'Wrong password.';
+    }
+  }
+  document.getElementById('lock').addEventListener('submit', (ev) => {
+    ev.preventDefault();
+    const f = document.getElementById('pw');
+    tryUnlock(f.value, false);
+    f.value = '';
+  });
+  document.getElementById('relock').addEventListener('click', () => {
+    try { sessionStorage.removeItem('jt'); } catch (_) {}
+    jobs = [];
+    document.getElementById('rows').replaceChildren();
+    document.getElementById('vault').hidden = true;
+    document.getElementById('lock').hidden = false;
+    document.getElementById('updated').textContent = 'locked';
+  });
+  try { const saved = sessionStorage.getItem('jt'); if (saved) tryUnlock(saved, true); } catch (_) {}
+})();
+</script>
+</body>
+</html>
