@@ -92,6 +92,7 @@
   .a-Watch { color: var(--amber); border-color: rgba(247,185,85,.4); }
   .a-Risk { color: var(--red); border-color: rgba(242,107,107,.35); }
   .soon { color: var(--amber); }
+  .unv { display: block; font: 500 10px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
   @media (max-width: 760px) { .hero { grid-template-columns: 1fr; padding-top: 48px; } nav .links { display: none; } }
   @media (prefers-reduced-motion: no-preference) { .fade { animation: fade .5s ease-out both; } @keyframes fade { from { opacity: 0; transform: translateY(6px); } } }
 </style>
@@ -171,11 +172,7 @@
       <div class="stats" id="appstats"></div>
       <div class="note" id="appnotes"></div>
       <div class="filters" role="group" aria-label="Application filters">
-        <button class="chip achip" data-c="" aria-pressed="true">All</button>
-        <button class="chip achip" data-c="Masters &amp; funding" aria-pressed="false">Masters &amp; funding</button>
-        <button class="chip achip" data-c="Fellowships &amp; research" aria-pressed="false">Fellowships &amp; research</button>
-        <button class="chip achip" data-c="Accelerators" aria-pressed="false">Accelerators</button>
-        <button class="chip achip" data-c="Industry &amp; other" aria-pressed="false">Industry &amp; other</button>
+        <span id="achips" style="display:contents"></span>
         <input class="search" id="aq" type="search" placeholder="Search programme" aria-label="Search programme">
       </div>
       <div class="tablewrap">
@@ -319,7 +316,20 @@
   let apps = [];
   const astate = { c: '', q: '' };
   const DAY = 86400000;
-  const statusClass = (s) => s === 'Submitted' ? 'a-Submitted' : /^High/.test(s) ? 'a-High' : s === 'Watch' ? 'a-Watch' : /risk|Unverified/i.test(s) ? 'a-Risk' : '';
+  const statusClass = (s) => s === 'Submitted' ? 'a-Submitted' : /^High|^Verified/.test(s) ? 'a-High' : /^Watch|^Check/.test(s) ? 'a-Watch' : /risk|Unverified|Not eligible/i.test(s) ? 'a-Risk' : '';
+  const CAT_ORDER = ['Masters – Italy', 'Masters – Europe', 'Masters – World', 'Funding – Italy', 'Funding – International', 'Fellowships & research', 'AI safety', 'Open source', 'Internet & policy', 'Accelerators', 'Industry & other', 'Not eligible'];
+  const NE = 'Not eligible';
+  function drawChips() {
+    const box = document.getElementById('achips');
+    box.replaceChildren();
+    const cats = [...new Set(apps.map((a) => a.category))].sort((a, b) => ((CAT_ORDER.indexOf(a) + 99) % 99) - ((CAT_ORDER.indexOf(b) + 99) % 99));
+    [['', 'All'], ['__soon', 'Due in 60 days'], ...cats.map((c) => [c, c])].forEach(([v, label]) => {
+      const b = el('button', 'chip achip', label + (v && v !== '__soon' ? ` · ${apps.filter((a) => a.category === v).length}` : ''));
+      b.type = 'button'; b.dataset.c = v; b.setAttribute('aria-pressed', astate.c === v ? 'true' : 'false');
+      b.addEventListener('click', () => { astate.c = v; box.querySelectorAll('.achip').forEach((x) => x.setAttribute('aria-pressed', x.dataset.c === v ? 'true' : 'false')); drawApps(); });
+      box.append(b);
+    });
+  }
   function showApps(d) {
     apps = Array.isArray(d.applications) ? d.applications : [];
     const notes = document.getElementById('appnotes');
@@ -327,24 +337,27 @@
     (Array.isArray(d.notes) ? d.notes : []).forEach((n) => notes.append(el('p', null, n)));
     notes.hidden = !notes.childElementCount;
     const today = Date.now();
-    const upcoming = apps.filter((a) => a.deadline_date && new Date(a.deadline_date + 'T23:59:59Z') >= today)
+    const upcoming = apps.filter((a) => a.category !== NE && a.deadline_date && new Date(a.deadline_date + 'T23:59:59Z') >= today)
       .sort((a, b) => a.deadline_date.localeCompare(b.deadline_date));
     const stats = document.getElementById('appstats');
     stats.replaceChildren();
-    [['Tracked', String(apps.length)], ['Masters & funding', String(apps.filter((a) => a.category === 'Masters & funding').length)],
-     ['Submitted', String(apps.filter((a) => a.status === 'Submitted').length)],
-     ['Next deadline', upcoming.length ? `${fmtDate(upcoming[0].deadline_date)} · ${upcoming[0].name}` : '—']]
+    const open = apps.filter((a) => a.category !== NE);
+    [['Open to you', String(open.length)], ['Masters', String(open.filter((a) => /^Masters/.test(a.category)).length)],
+     ['Due in 60 days', String(upcoming.filter((a) => new Date(a.deadline_date) - today <= 60 * DAY).length)],
+     ['Next deadline', upcoming.length ? `${fmtDate(upcoming[0].deadline_date)}${upcoming[0].verified === false ? ' (expected)' : ''} · ${upcoming[0].name}` : '—']]
       .forEach(([l, n], i) => { const c = el('div', 'card stat'); const v = el('div', 'n', n); if (i === 3) v.style.fontSize = '18px'; c.append(v, el('div', 'l', l)); stats.append(c); });
     document.getElementById('applocked').hidden = true;
     document.getElementById('appvault').hidden = false;
-    drawApps();
+    drawChips(); drawApps();
   }
   function drawApps() {
     const tbody = document.getElementById('approws');
     tbody.replaceChildren();
     const q = astate.q.toLowerCase();
     const sRank = (s) => s === 'Submitted' ? 0 : /^High/.test(s) ? 1 : s === 'Watch' ? 2 : /risk|Unverified/i.test(s) ? 5 : 3;
-    const list = apps.filter((a) => (!astate.c || a.category === astate.c) && (!q || `${a.name} ${a.type}`.toLowerCase().includes(q)))
+    const now = Date.now();
+    const inCat = (a) => astate.c === '' ? a.category !== NE : astate.c === '__soon' ? (a.category !== NE && a.deadline_date && (new Date(a.deadline_date + 'T23:59:59Z') - now) / DAY >= 0 && (new Date(a.deadline_date) - now) / DAY <= 60) : a.category === astate.c;
+    const list = apps.filter((a) => inCat(a) && (!q || `${a.name} ${a.type}`.toLowerCase().includes(q)))
       .sort((a, b) => (a.deadline_date ? 0 : 1) - (b.deadline_date ? 0 : 1) || String(a.deadline_date).localeCompare(String(b.deadline_date)) || sRank(a.status) - sRank(b.status));
     if (!list.length) { const tr = el('tr'); const td = el('td', 'empty', apps.length ? 'No programmes match.' : 'No applications saved yet.'); td.colSpan = 6; tr.append(td); tbody.append(tr); return; }
     list.forEach((a) => {
@@ -355,6 +368,7 @@
       det.append(dl); t.append(det); tr.append(t);
       tr.append(el('td', 'mono', a.type));
       const dd = el('td', 'co', a.deadline || '—');
+      if (a.verified === false && a.category !== NE) dd.append(el('span', 'unv', 'verify on official page'));
       if (a.deadline_date) { const left = (new Date(a.deadline_date + 'T23:59:59Z') - Date.now()) / DAY; if (left >= 0 && left <= 60) dd.classList.add('soon'); }
       tr.append(dd, el('td', 'co', a.funding || '—'));
       const s = el('td'); s.append(el('span', `pill ${statusClass(a.status)}`, a.status)); tr.append(s);
@@ -363,11 +377,6 @@
       tr.append(l); tbody.append(tr);
     });
   }
-  document.querySelectorAll('.achip').forEach((c) => c.addEventListener('click', () => {
-    astate.c = c.dataset.c;
-    document.querySelectorAll('.achip').forEach((x) => x.setAttribute('aria-pressed', x.dataset.c === astate.c ? 'true' : 'false'));
-    drawApps();
-  }));
   document.getElementById('aq').addEventListener('input', (e) => { astate.q = e.target.value; drawApps(); });
   try { const saved = sessionStorage.getItem('jt'); if (saved) tryUnlock(saved, true); } catch (_) {}
 })();
