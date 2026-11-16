@@ -20,7 +20,7 @@ A scheduled Claude task runs every 6–12 hours. Each run:
 
 ## applications.json row
 
-`app_id, name, type, category (Masters – Italy|Masters – Europe|Masters – World|Funding – Italy|Funding – International|Fellowships & research|AI safety|Open source|Internet & policy|Accelerators|Industry & other|Not eligible), eligibility, requirements, deadline (text), deadline_date (YYYY-MM-DD or null), funding, status, url (https only or null), verified (bool)`, plus top-level `updated`, `source`, `notes`.
+`app_id, name, type, category (Masters – Italy|Masters – Europe|Masters – World|Funding – Italy|Funding – International|Fellowships & research|AI safety|Open source|Internet & policy|Summer schools|Competitions|Accelerators|Industry & other|Not eligible), eligibility, requirements, deadline (text), deadline_date (YYYY-MM-DD or null), funding, status, url (https only or null), verified (bool)`, plus top-level `updated`, `source`, `notes`.
 
 Lock/unlock: `python3 tools/vault.py lock applications.json applications.enc.json`.
 

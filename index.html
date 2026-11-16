@@ -317,7 +317,7 @@
   const astate = { c: '', q: '' };
   const DAY = 86400000;
   const statusClass = (s) => s === 'Submitted' ? 'a-Submitted' : /^High|^Verified/.test(s) ? 'a-High' : /^Watch|^Check/.test(s) ? 'a-Watch' : /risk|Unverified|Not eligible/i.test(s) ? 'a-Risk' : '';
-  const CAT_ORDER = ['Masters – Italy', 'Masters – Europe', 'Masters – World', 'Funding – Italy', 'Funding – International', 'Fellowships & research', 'AI safety', 'Open source', 'Internet & policy', 'Accelerators', 'Industry & other', 'Not eligible'];
+  const CAT_ORDER = ['Masters – Italy', 'Masters – Europe', 'Masters – World', 'Funding – Italy', 'Funding – International', 'Fellowships & research', 'AI safety', 'Open source', 'Internet & policy', 'Summer schools', 'Competitions', 'Accelerators', 'Industry & other', 'Not eligible'];
   const NE = 'Not eligible';
   function drawChips() {
     const box = document.getElementById('achips');
