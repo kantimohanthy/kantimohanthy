@@ -69,7 +69,7 @@
   .s-Rejected { color: var(--red); border-color: rgba(242,107,107,.35); }
   .s-Skipped { color: var(--muted); }
   .fit-A { color: var(--green); }
-  .open { color: var(--blue); text-decoration: none; font-weight: 500; }
+  .open { color: var(--blue); text-decoration: none; font-weight: 500; white-space: nowrap; }
   .open:hover { text-decoration: underline; }
   .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
   .grid3 h3 { margin: 0 0 6px; font-size: 16px; }
@@ -80,6 +80,18 @@
   .lockrow { display: flex; gap: 8px; }
   .lockrow .search { border-radius: 8px; padding: 10px 14px; }
   .empty { padding: 32px; text-align: center; color: var(--muted); }
+  .note { border-left: 2px solid var(--amber); padding: 4px 0 4px 14px; color: var(--muted); font-size: 13px; margin: 0 0 24px; }
+  .note p { margin: 0 0 4px; }
+  details summary { cursor: pointer; color: var(--blue); font: 500 12px var(--mono); list-style: none; margin-top: 6px; }
+  details summary::-webkit-details-marker { display: none; }
+  details dl { margin: 8px 0 0; font-size: 13px; }
+  details dt { font: 500 11px var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  details dd { margin: 2px 0 10px; }
+  .a-Submitted { color: var(--blue); border-color: rgba(79,140,255,.4); }
+  .a-High { color: var(--green); border-color: rgba(49,208,125,.4); }
+  .a-Watch { color: var(--amber); border-color: rgba(247,185,85,.4); }
+  .a-Risk { color: var(--red); border-color: rgba(242,107,107,.35); }
+  .soon { color: var(--amber); }
   @media (max-width: 760px) { .hero { grid-template-columns: 1fr; padding-top: 48px; } nav .links { display: none; } }
   @media (prefers-reduced-motion: no-preference) { .fade { animation: fade .5s ease-out both; } @keyframes fade { from { opacity: 0; transform: translateY(6px); } } }
 </style>
@@ -88,7 +100,7 @@
 <div class="wrap">
   <nav>
     <span class="brand">UJ · kantimohanthy.com</span>
-    <span class="links"><a href="#search">Tracker</a><a href="#about">About</a><a href="https://kantimohanthy.dev">Portfolio ↗</a></span>
+    <span class="links"><a href="#search">Tracker</a><a href="#apps">Applications</a><a href="#about">About</a><a href="https://kantimohanthy.dev">Portfolio ↗</a></span>
   </nav>
 
   <header class="hero fade">
@@ -144,6 +156,32 @@
         <table>
           <thead><tr><th>Role</th><th>Where</th><th>Type</th><th>Posted</th><th>Pay listed</th><th>Status</th><th></th></tr></thead>
           <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="apps">
+    <p class="eyebrow">Private</p>
+    <h2>Fellowships &amp; masters applications</h2>
+    <p class="sub" id="appsub">Masters, scholarships, fellowships, research internships and programmes. Unlocks with the same password as the job tracker.</p>
+    <p id="applocked" class="co">Locked. Use the password form in the job tracker above.</p>
+
+    <div id="appvault" hidden>
+      <div class="stats" id="appstats"></div>
+      <div class="note" id="appnotes"></div>
+      <div class="filters" role="group" aria-label="Application filters">
+        <button class="chip achip" data-c="" aria-pressed="true">All</button>
+        <button class="chip achip" data-c="Masters &amp; funding" aria-pressed="false">Masters &amp; funding</button>
+        <button class="chip achip" data-c="Fellowships &amp; research" aria-pressed="false">Fellowships &amp; research</button>
+        <button class="chip achip" data-c="Accelerators" aria-pressed="false">Accelerators</button>
+        <button class="chip achip" data-c="Industry &amp; other" aria-pressed="false">Industry &amp; other</button>
+        <input class="search" id="aq" type="search" placeholder="Search programme" aria-label="Search programme">
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Programme</th><th>Type</th><th>Deadline</th><th>Funding</th><th>Status</th><th></th></tr></thead>
+          <tbody id="approws"></tbody>
         </table>
       </div>
     </div>
@@ -217,11 +255,11 @@
     });
   }
 
-  document.querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => {
+  document.querySelectorAll('.chip[data-f]').forEach((c) => c.addEventListener('click', () => {
     const f = c.dataset.f, v = c.dataset.v;
     if (f === 'mode') state.mode = v;
     else state.status = state.status === v ? '' : v;
-    document.querySelectorAll('.chip').forEach((x) => {
+    document.querySelectorAll('.chip[data-f]').forEach((x) => {
       const on = x.dataset.f === 'mode' ? x.dataset.v === state.mode : x.dataset.v === state.status;
       x.setAttribute('aria-pressed', on ? 'true' : 'false');
     });
@@ -230,8 +268,8 @@
   document.getElementById('q').addEventListener('input', (e) => { state.q = e.target.value; drawRows(); });
 
   const b64 = (x) => Uint8Array.from(atob(x), (c) => c.charCodeAt(0));
-  async function unlock(pw) {
-    const e = await fetch('jobs.enc.json', { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error('load'); return r.json(); });
+  async function unlock(pw, file) {
+    const e = await fetch(file || 'jobs.enc.json', { cache: 'no-store' }).then((r) => { if (!r.ok) throw new Error('load'); return r.json(); });
     const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
     const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt: b64(e.salt), iterations: e.iter }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
     const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(e.iv) }, key, b64(e.ct));
@@ -251,6 +289,7 @@
     try {
       show(await unlock(pw));
       msg.textContent = '';
+      unlock(pw, 'applications.enc.json').then(showApps, () => showApps({ applications: [] }));
       try { sessionStorage.setItem('jt', pw); } catch (_) {}
     } catch (err) {
       try { sessionStorage.removeItem('jt'); } catch (_) {}
@@ -270,7 +309,66 @@
     document.getElementById('vault').hidden = true;
     document.getElementById('lock').hidden = false;
     document.getElementById('updated').textContent = 'locked';
+    apps = [];
+    document.getElementById('approws').replaceChildren();
+    document.getElementById('appvault').hidden = true;
+    document.getElementById('applocked').hidden = false;
   });
+
+  // ---- Fellowships & masters applications ----
+  let apps = [];
+  const astate = { c: '', q: '' };
+  const DAY = 86400000;
+  const statusClass = (s) => s === 'Submitted' ? 'a-Submitted' : /^High/.test(s) ? 'a-High' : s === 'Watch' ? 'a-Watch' : /risk|Unverified/i.test(s) ? 'a-Risk' : '';
+  function showApps(d) {
+    apps = Array.isArray(d.applications) ? d.applications : [];
+    const notes = document.getElementById('appnotes');
+    notes.replaceChildren();
+    (Array.isArray(d.notes) ? d.notes : []).forEach((n) => notes.append(el('p', null, n)));
+    notes.hidden = !notes.childElementCount;
+    const today = Date.now();
+    const upcoming = apps.filter((a) => a.deadline_date && new Date(a.deadline_date + 'T23:59:59Z') >= today)
+      .sort((a, b) => a.deadline_date.localeCompare(b.deadline_date));
+    const stats = document.getElementById('appstats');
+    stats.replaceChildren();
+    [['Tracked', String(apps.length)], ['Masters & funding', String(apps.filter((a) => a.category === 'Masters & funding').length)],
+     ['Submitted', String(apps.filter((a) => a.status === 'Submitted').length)],
+     ['Next deadline', upcoming.length ? `${fmtDate(upcoming[0].deadline_date)} · ${upcoming[0].name}` : '—']]
+      .forEach(([l, n], i) => { const c = el('div', 'card stat'); const v = el('div', 'n', n); if (i === 3) v.style.fontSize = '18px'; c.append(v, el('div', 'l', l)); stats.append(c); });
+    document.getElementById('applocked').hidden = true;
+    document.getElementById('appvault').hidden = false;
+    drawApps();
+  }
+  function drawApps() {
+    const tbody = document.getElementById('approws');
+    tbody.replaceChildren();
+    const q = astate.q.toLowerCase();
+    const sRank = (s) => s === 'Submitted' ? 0 : /^High/.test(s) ? 1 : s === 'Watch' ? 2 : /risk|Unverified/i.test(s) ? 5 : 3;
+    const list = apps.filter((a) => (!astate.c || a.category === astate.c) && (!q || `${a.name} ${a.type}`.toLowerCase().includes(q)))
+      .sort((a, b) => (a.deadline_date ? 0 : 1) - (b.deadline_date ? 0 : 1) || String(a.deadline_date).localeCompare(String(b.deadline_date)) || sRank(a.status) - sRank(b.status));
+    if (!list.length) { const tr = el('tr'); const td = el('td', 'empty', apps.length ? 'No programmes match.' : 'No applications saved yet.'); td.colSpan = 6; tr.append(td); tbody.append(tr); return; }
+    list.forEach((a) => {
+      const tr = el('tr');
+      const t = el('td'); t.append(el('div', 'role', a.name));
+      const det = el('details'); det.append(el('summary', null, 'Eligibility & requirements'));
+      const dl = el('dl'); dl.append(el('dt', null, 'Eligibility'), el('dd', null, a.eligibility || '—'), el('dt', null, 'What to submit'), el('dd', null, a.requirements || '—'));
+      det.append(dl); t.append(det); tr.append(t);
+      tr.append(el('td', 'mono', a.type));
+      const dd = el('td', 'co', a.deadline || '—');
+      if (a.deadline_date) { const left = (new Date(a.deadline_date + 'T23:59:59Z') - Date.now()) / DAY; if (left >= 0 && left <= 60) dd.classList.add('soon'); }
+      tr.append(dd, el('td', 'co', a.funding || '—'));
+      const s = el('td'); s.append(el('span', `pill ${statusClass(a.status)}`, a.status)); tr.append(s);
+      const l = el('td'); const u = safeUrl(a.url);
+      if (u) { const x = el('a', 'open', 'Official ↗'); x.href = u; x.target = '_blank'; x.rel = 'noopener noreferrer'; l.append(x); }
+      tr.append(l); tbody.append(tr);
+    });
+  }
+  document.querySelectorAll('.achip').forEach((c) => c.addEventListener('click', () => {
+    astate.c = c.dataset.c;
+    document.querySelectorAll('.achip').forEach((x) => x.setAttribute('aria-pressed', x.dataset.c === astate.c ? 'true' : 'false'));
+    drawApps();
+  }));
+  document.getElementById('aq').addEventListener('input', (e) => { astate.q = e.target.value; drawApps(); });
   try { const saved = sessionStorage.getItem('jt'); if (saved) tryUnlock(saved, true); } catch (_) {}
 })();
 </script>

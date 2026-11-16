@@ -4,6 +4,7 @@ Ujwal Shyam Kantimohanthy's public "open to work" page with a password-locked jo
 
 - `index.html` – the whole site (static, no build step, no tracking, no secrets).
 - `jobs.enc.json` – the tracked roles, encrypted (AES-256-GCM, PBKDF2-SHA256 600k). The page decrypts it in the browser after the password is entered.
+- `applications.enc.json` – fellowships, masters, scholarships and programme applications, encrypted the same way and unlocked with the same password (plaintext `applications.json` is git-ignored). Shown in the page's "Fellowships & masters applications" section.
 - `tools/vault.py` – lock/unlock `jobs.json` <-> `jobs.enc.json` with the `JOBS_PASSWORD` environment variable. The plaintext `jobs.json` is git-ignored and must never be committed.
 - `Ujwal_Kantimohanthy_CV.pdf` – public CV (no phone number).
 - `CNAME` – custom domain for GitHub Pages.
@@ -16,6 +17,12 @@ A scheduled Claude task runs every 6–12 hours. Each run:
 2. Unlocks `jobs.enc.json`, adds new matches to `jobs.json` with the next `job_id`, never removing or renumbering existing rows.
 3. Checks Gmail for application confirmations, interview invites and rejections, and updates each role's `status`.
 4. Sets `updated` to the run time (UTC ISO), re-locks into `jobs.enc.json`, and commits only the encrypted file with a message like `jobs: +4 roles, 2 status changes`.
+
+## applications.json row
+
+`app_id, name, type, category (Masters & funding|Fellowships & research|Accelerators|Industry & other), eligibility, requirements, deadline (text), deadline_date (YYYY-MM-DD or null), funding, status, url (https only or null)`, plus top-level `updated`, `source`, `notes`.
+
+Lock/unlock: `python3 tools/vault.py lock applications.json applications.enc.json`.
 
 ## jobs.json row
 
