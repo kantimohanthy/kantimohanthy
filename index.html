@@ -365,6 +365,7 @@
       const t = el('td'); t.append(el('div', 'role', a.name));
       const det = el('details'); det.append(el('summary', null, 'Eligibility & requirements'));
       const dl = el('dl'); dl.append(el('dt', null, 'Eligibility'), el('dd', null, a.eligibility || '—'), el('dt', null, 'What to submit'), el('dd', null, a.requirements || '—'));
+      if (a.cv) dl.append(el('dt', null, 'CV to use'), el('dd', null, a.cv));
       det.append(dl); t.append(det); tr.append(t);
       tr.append(el('td', 'mono', a.type));
       const dd = el('td', 'co', a.deadline || '—');
