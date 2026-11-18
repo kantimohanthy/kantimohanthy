@@ -1,0 +1,4 @@
+# Plaintext tracker data must never be committed
+*.plain.json
+private/
+private-data/

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<title>Private tracker</title>
+<style>
+  :root{
+    --bg:#0A0B0D; --panel:#101317; --panel2:#14181d; --line:#20252B; --text:#F5F5F5; --muted:#8A9098;
+    --blue:#4F8CFF; --amber:#F7B955; --green:#31D07D; --red:#FF6B6B; --violet:#A78BFA;
+    --radius:14px; --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none !important}
+  html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  a{color:var(--blue);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 80px}
+  /* gate */
+  .gate{min-height:100vh;display:grid;place-items:center;padding:20px}
+  .gate form{width:100%;max-width:380px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:28px}
+  .gate h1{font-size:18px;margin:0 0 4px;letter-spacing:-.01em}
+  .gate p{color:var(--muted);margin:0 0 18px;font-size:13px}
+  input,select{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;outline:none}
+  input:focus,select:focus{border-color:var(--blue)}
+  button{background:var(--blue);color:#fff;border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:600;cursor:pointer;width:100%;margin-top:12px}
+  button:disabled{opacity:.6;cursor:wait}
+  .err{color:var(--red);font-size:13px;min-height:18px;margin-top:10px}
+  /* app */
+  header.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  .eyebrow{font:12px var(--mono);color:var(--muted);text-transform:uppercase;letter-spacing:.12em}
+  h1.title{font-size:30px;margin:4px 0 0;letter-spacing:-.02em}
+  .meta{color:var(--muted);font-size:13px}
+  .lock{background:transparent;border:1px solid var(--line);color:var(--muted);width:auto;margin:0;padding:8px 12px;font-weight:500}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+  .stat b{display:block;font-size:26px;letter-spacing:-.02em}
+  .stat span{color:var(--muted);font-size:12px}
+  .profile{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin-bottom:18px;font-size:13px;color:var(--muted)}
+  .profile strong{color:var(--text);font-weight:600}
+  .next{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin-bottom:20px}
+  .chip{flex:0 0 auto;background:var(--panel2);border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:13px;white-space:nowrap}
+  .chip em{font-style:normal;font-family:var(--mono);color:var(--amber);margin-right:6px}
+  .chip.urgent em{color:var(--red)}
+  .filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:10px;margin-bottom:18px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;display:flex;flex-direction:column;gap:10px}
+  .card.dim{opacity:.55}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+  .badge{font:600 11px var(--mono);text-transform:uppercase;letter-spacing:.06em;padding:3px 8px;border-radius:6px;border:1px solid currentColor}
+  .fit-eligible{color:var(--green)} .fit-possible{color:var(--blue)} .fit-longshot{color:var(--amber)} .fit-ineligible{color:var(--red)} .fit-closed{color:var(--muted)}
+  .region{font:12px var(--mono);color:var(--muted)}
+  .card h3{margin:0;font-size:16px;letter-spacing:-.01em}
+  .schools{color:var(--muted);font-size:13px}
+  .kv{font-size:13px} .kv span{color:var(--muted)}
+  .deadline{font-family:var(--mono);font-size:13px}
+  .deadline .left{color:var(--amber)} .deadline .left.urgent{color:var(--red)} .deadline .left.past{color:var(--muted)}
+  .action{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px}
+  .foot{display:flex;gap:10px;align-items:center;margin-top:auto}
+  .foot select{width:auto;flex:1;padding:7px 10px;font-size:13px}
+  .legend{margin-top:26px;color:var(--muted);font-size:12px;display:grid;gap:4px}
+  .empty{color:var(--muted);padding:30px;text-align:center;border:1px dashed var(--line);border-radius:var(--radius)}
+  @media (max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}.filters{grid-template-columns:1fr 1fr}.filters input{grid-column:1/-1}h1.title{font-size:24px}}
+</style>
+</head>
+<body>
+<div id="gate" class="gate">
+  <form id="gateForm" autocomplete="off">
+    <h1>Private tracker</h1>
+    <p>This page is encrypted. Enter the password to unlock it in your browser.</p>
+    <input id="pw" type="password" placeholder="Password" autocomplete="current-password" required>
+    <button id="unlockBtn" type="submit">Unlock</button>
+    <div id="err" class="err" role="alert"></div>
+  </form>
+</div>
+
+<div id="app" class="wrap" hidden>
+  <header class="top">
+    <div>
+      <div class="eyebrow">Master's 2027 · funding tracker</div>
+      <h1 class="title">Where the money is</h1>
+      <div class="meta" id="updated"></div>
+    </div>
+    <button class="lock" id="lockBtn" type="button">Lock</button>
+  </header>
+  <div class="stats" id="stats"></div>
+  <div class="profile" id="profile"></div>
+  <div class="eyebrow" style="margin-bottom:8px">Next deadlines</div>
+  <div class="next" id="next"></div>
+  <div class="filters">
+    <input id="q" type="search" placeholder="Search university, country, scholarship…">
+    <select id="fRegion"><option value="">All regions</option></select>
+    <select id="fFit">
+      <option value="">All fits</option>
+      <option value="eligible">Eligible</option>
+      <option value="possible">Possible</option>
+      <option value="longshot">Long shot</option>
+      <option value="ineligible">Not eligible</option>
+      <option value="closed">Closed for 2027</option>
+    </select>
+    <select id="fShow">
+      <option value="actionable">Hide long shots & closed</option>
+      <option value="all">Show everything</option>
+    </select>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="legend" id="legend"></div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+  const STATUS = ["To do","Researching","Preparing","Submitted","Interview","Offer","Rejected","Skipped"];
+  const FIT_LABEL = {eligible:"Eligible",possible:"Possible",longshot:"Long shot",ineligible:"Not eligible",closed:"Closed 2027"};
+  const FIT_ORDER = {eligible:0,possible:1,longshot:2,ineligible:3,closed:4};
+  const $ = (id) => document.getElementById(id);
+  let DATA = null, wired = false;
+
+  const unb64 = (s) => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const store = {
+    get(k){ try { return localStorage.getItem(k); } catch { return null; } },
+    set(k,v){ try { localStorage.setItem(k,v); } catch { /* storage unavailable */ } }
+  };
+
+  async function decrypt(password){
+    const res = await fetch("data.enc.json", {cache:"no-store"});
+    if (!res.ok) throw new Error("Could not load data");
+    const env = await res.json();
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(password), "PBKDF2", false, ["deriveKey"]);
+    const key = await crypto.subtle.deriveKey({name:"PBKDF2", salt:unb64(env.salt), iterations:env.iterations, hash:"SHA-256"}, base, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+    const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:unb64(env.iv)}, key, unb64(env.ct));
+    return JSON.parse(new TextDecoder().decode(pt));
+  }
+
+  function el(tag, attrs = {}, ...kids){
+    const n = document.createElement(tag);
+    for (const [k,v] of Object.entries(attrs)) {
+      if (k === "class") n.className = v; else if (k === "text") n.textContent = v; else n.setAttribute(k, v);
+    }
+    for (const kid of kids) if (kid != null) n.append(kid);
+    return n;
+  }
+
+  function daysLeft(iso){
+    if (!iso) return null;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const d = new Date(iso + "T00:00:00");
+    return Math.round((d - today) / 86400000);
+  }
+  function fmtDate(iso){
+    return new Date(iso + "T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+  }
+  function safeUrl(u){
+    try { const x = new URL(u); return x.protocol === "https:" ? x.href : null; } catch { return null; }
+  }
+
+  function render(){
+    const items = DATA.items;
+    $("updated").textContent = "Last updated " + fmtDate(DATA.updated) + " · statuses you set are saved in this browser only";
+
+    const open = items.filter(i => i.fit === "eligible" || i.fit === "possible");
+    const soon = open.filter(i => { const d = daysLeft(i.deadline); return d !== null && d >= 0 && d <= 45; });
+    const eligible = items.filter(i => i.fit === "eligible" || i.fit === "possible");
+    const submitted = items.filter(i => (store.get("st:"+i.id) || "To do") === "Submitted").length;
+    $("stats").replaceChildren(
+      ...[[items.length,"Options tracked"],[eligible.length,"Eligible or possible"],[soon.length,"Your deadlines in 45 days"],[submitted,"Submitted"]]
+        .map(([n,l]) => el("div",{class:"stat"}, el("b",{text:String(n)}), el("span",{text:l})))
+    );
+
+    const p = DATA.profile;
+    $("profile").replaceChildren(
+      el("strong",{text:"Your profile: "}), document.createTextNode(p.average + " · " + p.graduation + ". "),
+      el("strong",{text:"Lead with: "}), document.createTextNode(p.strengths)
+    );
+
+    const upcoming = open.filter(i => { const d = daysLeft(i.deadline); return d !== null && d >= 0; })
+      .sort((a,b) => a.deadline.localeCompare(b.deadline)).slice(0,8);
+    $("next").replaceChildren(...upcoming.map(i => {
+      const d = daysLeft(i.deadline);
+      return el("div",{class:"chip" + (d <= 14 ? " urgent" : "")}, el("em",{text: d + "d"}), document.createTextNode(i.name.split(" (")[0]));
+    }));
+
+    const regions = [...new Set(items.map(i => i.region))].sort();
+    const rSel = $("fRegion");
+    if (rSel.options.length === 1) regions.forEach(r => rSel.append(el("option",{value:r,text:r})));
+
+    const q = $("q").value.trim().toLowerCase(), fr = rSel.value, ff = $("fFit").value, show = $("fShow").value;
+    const list = items.filter(i => {
+      if (fr && i.region !== fr) return false;
+      if (ff && i.fit !== ff) return false;
+      if (!ff && show === "actionable" && !["eligible","possible"].includes(i.fit)) return false;
+      if (q && ![i.name,i.country,i.region,i.schools,i.covers].join(" ").toLowerCase().includes(q)) return false;
+      return true;
+    }).sort((a,b) => {
+      const gone = (i) => (i.fit === "closed" || i.fit === "ineligible") ? 1 : 0;
+      const key = (i) => { const d = daysLeft(i.deadline); return d === null || d < 0 ? 9999 : d; };
+      return gone(a) - gone(b) || key(a) - key(b) || a.priority - b.priority || FIT_ORDER[a.fit] - FIT_ORDER[b.fit];
+    });
+
+    $("grid").replaceChildren(...(list.length ? list.map(card) : [el("div",{class:"empty",text:"Nothing matches these filters."})]));
+
+    $("legend").replaceChildren(...Object.entries(DATA.fitLegend).map(([k,v]) =>
+      el("div",{}, el("span",{class:"badge fit-"+k,text:FIT_LABEL[k]}), document.createTextNode("  " + v))));
+  }
+
+  function card(i){
+    const d = daysLeft(i.deadline);
+    let dl;
+    if (i.deadline) {
+      const cls = d < 0 ? "left past" : d <= 14 ? "left urgent" : "left";
+      const txt = d < 0 ? "passed" : d === 0 ? "today" : d + " days left";
+      dl = el("div",{class:"deadline"}, document.createTextNode(fmtDate(i.deadline) + " · "), el("span",{class:cls,text:txt}));
+    } else dl = el("div",{class:"deadline"}, el("span",{class:"left",text:"No fixed date yet"}));
+
+    const status = store.get("st:"+i.id) || "To do";
+    const sel = el("select",{"aria-label":"Status for " + i.name});
+    STATUS.forEach(s => { const o = el("option",{value:s,text:s}); if (s === status) o.selected = true; sel.append(o); });
+    sel.addEventListener("change", () => { store.set("st:"+i.id, sel.value); render(); });
+
+    const url = safeUrl(i.link);
+    const link = url ? el("a",{href:url,target:"_blank",rel:"noopener noreferrer",text:"Official page ↗"}) : null;
+
+    return el("article",{class:"card" + (["closed","ineligible"].includes(i.fit) || status === "Skipped" ? " dim" : "")},
+      el("div",{class:"row"}, el("span",{class:"badge fit-"+i.fit,text:FIT_LABEL[i.fit]}), el("span",{class:"region",text:i.country + " · " + i.region})),
+      el("h3",{text:i.name}),
+      el("div",{class:"schools",text:i.schools}),
+      el("div",{class:"kv"}, el("span",{text:"Covers: "}), document.createTextNode(i.covers)),
+      dl,
+      el("div",{class:"kv"}, el("span",{text:i.deadlineNote})),
+      el("div",{class:"action"}, el("strong",{text:"Next: "}), document.createTextNode(i.action)),
+      el("div",{class:"foot"}, sel, link)
+    );
+  }
+
+  $("gateForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = $("unlockBtn"); btn.disabled = true; btn.textContent = "Unlocking…"; $("err").textContent = "";
+    try {
+      DATA = await decrypt($("pw").value);
+      $("pw").value = "";
+      $("gate").hidden = true; $("app").hidden = false;
+      if (!wired) { ["q","fRegion","fFit","fShow"].forEach(id => $(id).addEventListener("input", () => DATA && render())); wired = true; }
+      render();
+    } catch {
+      $("err").textContent = "Wrong password, or the data could not be loaded.";
+    } finally { btn.disabled = false; btn.textContent = "Unlock"; }
+  });
+  $("lockBtn").addEventListener("click", () => { DATA = null; $("grid").replaceChildren(); $("app").hidden = true; $("gate").hidden = false; $("pw").focus(); });
+})();
+</script>
+</body>
+</html>
